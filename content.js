@@ -1,4 +1,3 @@
-// Define the array of keywords to block
 const keywords = [
   "100% music, 0% nudity",
   "Who's here in ",
@@ -36,6 +35,13 @@ const keywords = [
   "2025 anyone?",
   "2026 anyone?",
   "Edit",
+  "I see you scrolling through the comments",
+  "You are allowed to like",
+  "I am not asking for likes",
+  "If you like this comment",
+  "If you are reading this",
+  "If you don't like this comment",
+  "Wow this blew",
 ];
 
 // Function to create a regex pattern from a keyword
@@ -49,22 +55,28 @@ function containsKeyword(text) {
   return keywords.some((keyword) => createPattern(keyword).test(text));
 }
 
-// Function to check and hide comments
-function blockComments() {
+// Function to check and hide or replace comments
+function blockComments(keywords, replaceComments) {
   const comments = document.querySelectorAll("#content-text");
   comments.forEach((comment) => {
-    if (containsKeyword(comment.innerText.toLowerCase())) {
-      comment.closest("ytd-comment-thread-renderer").style.display = "none";
+    if (containsKeyword(comment.innerText.toLowerCase(), keywords)) {
+      if (replaceComments) {
+        comment.innerText = "[Blocked Comment]";
+      } else {
+        comment.closest("ytd-comment-thread-renderer").style.display = "none";
+      }
     }
   });
 }
 
 // Function to initialize the observer
-function initObserver() {
+function initObserver(keywords, replaceComments) {
   const commentsSection = document.querySelector("#comments");
   if (commentsSection) {
-    blockComments();
-    const observer = new MutationObserver(blockComments);
+    blockComments(keywords, replaceComments);
+    const observer = new MutationObserver(() =>
+      blockComments(keywords, replaceComments)
+    );
     observer.observe(commentsSection, {
       childList: true,
       subtree: true,
@@ -74,28 +86,21 @@ function initObserver() {
   }
 }
 
-// Run the initObserver function when the page loads
+// Load keywords and toggle states from storage and run the initObserver function when the page loads
 window.addEventListener("load", () => {
-  chrome.storage.sync.get(["keywords", "isEnabled"], (data) => {
-    const keywords = data.keywords || [];
-    const isEnabled = data.isEnabled !== false; // Default to enabled if not set
-    if (isEnabled) {
-      setTimeout(() => {
-        initObserver(keywords);
-        console.log(`
- _        _______  _______    _______  _______  _______  _______  _______  _       _________ _______    ______   _        _______  _______  _        _______  ______  
-( (    /|(  ____ )(  ____ \  (  ____ \(  ___  )(       )(       )(  ____ \( (    /|\__   __/(  ____ \  (  ___ \ ( \      (  ___  )(  ____ \| \    /\(  ____ \(  __  \ 
-|  \  ( || (    )|| (    \/  | (    \/| (   ) || () () || () () || (    \/|  \  ( |   ) (   | (    \/  | (   ) )| (      | (   ) || (    \/|  \  / /| (    \/| (  \  )
-|   \ | || (____)|| |        | |      | |   | || || || || || || || (__    |   \ | |   | |   | (_____   | (__/ / | |      | |   | || |      |  (_/ / | (__    | |   ) |
-| (\ \) ||  _____)| |        | |      | |   | || |(_)| || |(_)| ||  __)   | (\ \) |   | |   (_____  )  |  __ (  | |      | |   | || |      |   _ (  |  __)   | |   | |
-| | \   || (      | |        | |      | |   | || |   | || |   | || (      | | \   |   | |         ) |  | (  \ \ | |      | |   | || |      |  ( \ \ | (      | |   ) |
-| )  \  || )      | (____/\  | (____/\| (___) || )   ( || )   ( || (____/\| )  \  |   | |   /\____) |  | )___) )| (____/\| (___) || (____/\|  /  \ \| (____/\| (__/  )
-|/    )_)|/       (_______/  (_______/(_______)|/     \||/     \|(_______/|/    )_)   )_(   \_______)  |/ \___/ (_______/(_______)(_______/|_/    \/(_______/(______/ 
-                                                                                                                                                                      
-`);
-      }, 3000);
-    } else {
-      console.log("NPC Comment Blocker is disabled");
+  chrome.storage.sync.get(
+    ["keywords", "isEnabled", "replaceComments"],
+    (data) => {
+      const keywords = data.keywords || [];
+      const isEnabled = data.isEnabled !== false; // Default to enabled if not set
+      const replaceComments = data.replaceComments === true; // Default to remove if not set
+      if (isEnabled) {
+        setTimeout(() => {
+          initObserver(keywords, replaceComments);
+        }, 3000);
+      } else {
+        console.log("NPC Comment Blocker is disabled");
+      }
     }
-  });
+  );
 });
