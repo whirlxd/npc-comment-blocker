@@ -1,6 +1,7 @@
 # NPC Comment Blocker
 
-This is a simple plugin that blocks NPC comments in the youtube chatbox
+This is a simple plugin that blocks NPC comments in the youtube comment section. It is still in development and will be updated regularly.
+
 Example of NPC comments:
 
 ```
@@ -22,7 +23,11 @@ Example of NPC comments:
 
 ## Usage
 
-The extension will automatically block NPC comments in the youtube comment section.Since its in development there isnt a way to turn it off/on yet.
+The extension will automatically block NPC comments in the youtube comment section.Since its in development there isn't a way to turn it off/on yet.
+
+## Why is it not on the Chrome Web Store?
+
+It costs 5$ to publish an extension on the Chrome Web Store and I don't want have the money to spend on that. If you want to publish it on the Chrome Web Store, please open an issue and I will be happy to help you.
 
 ## Roadmap
 
