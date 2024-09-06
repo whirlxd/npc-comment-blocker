@@ -42,6 +42,22 @@ const keywords = [
   "If you are reading this",
   "If you don't like this comment",
   "Wow this blew",
+  "WHO's Still here",
+  "2019 anyone?",
+  "  Who else is just randomly listening to some old songs",
+  "I'm not asking for likes",
+  "0% Porn",
+  "100% Music",
+  "See you in 2030",
+  "The older i get",
+  "The worst thing about this song is that it ends",
+  "This song is my childhood",
+  "This song is my life",
+  "This song is my love",
+  "This song is my soul",
+  "This song is my heart",
+  "The worst thing about this",
+  "Lets get this to",
 ];
 
 // Function to create a regex pattern from a keyword
