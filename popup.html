@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NPC Comment Blocker</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #040113;
+        color: #e2dcfd;
+
+        width: 300px;
+      }
+      h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+      label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      input[type="text"] {
+        width: calc(100% - 10px);
+        padding: 8px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .toggle-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        margin-top: 10px;
+      }
+      .toggle-container input {
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>NPC Comment Blocker</h1>
+    <input
+      type="text"
+      id="keywords"
+      placeholder="Enter keywords separated by commas"
+    />
+    <button id="save">Save Keywords</button>
+    <div class="toggle-container">
+      <label for="toggle">Enable Extension</label>
+      <input type="checkbox" id="toggle" />
+    </div>
+    <p style="font-size: 12px; color: #666">[Reload to apply]</p>
+    <script src="popup.js"></script>
+  </body>
+</html>

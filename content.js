@@ -76,10 +76,13 @@ function initObserver() {
 
 // Run the initObserver function when the page loads
 window.addEventListener("load", () => {
-  // Delay to ensure comments section is loaded
-  setTimeout(() => {
-    initObserver();
-    console.log(`
+  chrome.storage.sync.get(["keywords", "isEnabled"], (data) => {
+    const keywords = data.keywords || [];
+    const isEnabled = data.isEnabled !== false; // Default to enabled if not set
+    if (isEnabled) {
+      setTimeout(() => {
+        initObserver(keywords);
+        console.log(`
  _        _______  _______    _______  _______  _______  _______  _______  _       _________ _______    ______   _        _______  _______  _        _______  ______  
 ( (    /|(  ____ )(  ____ \  (  ____ \(  ___  )(       )(       )(  ____ \( (    /|\__   __/(  ____ \  (  ___ \ ( \      (  ___  )(  ____ \| \    /\(  ____ \(  __  \ 
 |  \  ( || (    )|| (    \/  | (    \/| (   ) || () () || () () || (    \/|  \  ( |   ) (   | (    \/  | (   ) )| (      | (   ) || (    \/|  \  / /| (    \/| (  \  )
@@ -90,5 +93,9 @@ window.addEventListener("load", () => {
 |/    )_)|/       (_______/  (_______/(_______)|/     \||/     \|(_______/|/    )_)   )_(   \_______)  |/ \___/ (_______/(_______)(_______/|_/    \/(_______/(______/ 
                                                                                                                                                                       
 `);
-  }, 3000);
+      }, 3000);
+    } else {
+      console.log("NPC Comment Blocker is disabled");
+    }
+  });
 });

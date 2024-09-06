@@ -6,9 +6,9 @@ Example of NPC comments:
 
 ```
 - Whose here in [year]?
-0% NUDITY
-0% DRUGS
-100% TALENT
+- Like if you are watching this in [year]
+- Only legends will remember this
+- You can like this if you aren't from tik tok
 ```
 
 ## Installation
@@ -31,8 +31,8 @@ It costs 5$ to publish an extension on the Chrome Web Store and I don't want hav
 
 ## Roadmap
 
-- Add a toggle button to turn the extension on/off
-- Add a way to add custom comments to block
+- Add a toggle button to turn the extension on/off - [X]
+- Add a way to add custom comments to block - [?]
 - Add an authentication system to block comments based on the user's preference
 - Add an option to modify the comments instead of blocking them
 - Improve the comments blocked and implement a better regex system
