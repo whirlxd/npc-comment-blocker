@@ -1,4 +1,5 @@
 const keywords = [
+  "Best",
   "100% music, 0% nudity",
   "Who's here in ",
   "Who's listening to this in ",
@@ -28,13 +29,6 @@ const keywords = [
   "You are allowed to like",
   "Edit: Thanks for the likes!",
   "Edit: I can't believe this blew up!",
-  "2021 anyone?",
-  "2022 anyone?",
-  "2023 anyone?",
-  "2024 anyone?",
-  "2025 anyone?",
-  "2026 anyone?",
-  "Edit",
   "I see you scrolling through the comments",
   "You are allowed to like",
   "I am not asking for likes",
@@ -58,20 +52,49 @@ const keywords = [
   "This song is my heart",
   "The worst thing about this",
   "Lets get this to",
+  "[year] anyone?",
+  "[year] [month]",
 ];
 
-// Function to create a regex pattern from a keyword
-function createPattern(keyword) {
-  const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp(escapedKeyword.replace(/\s+/g, "\\s*"), "i");
+/**
+ * Replaces placeholders in a keyword with regex patterns.
+ * @param {string} keyword - The keyword containing placeholders.
+ * @returns {string} - The keyword with placeholders replaced by regex patterns.
+ */
+function replacePlaceholders(keyword) {
+  return keyword
+    .replace(/\[year\]/g, "(20\\d{2})")
+    .replace(/\[month\]/g, "(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)");
 }
 
-// Function to check if a text contains any of the keywords
+/**
+ * Creates a regex pattern from a keyword.
+ * @param {string} keyword - The keyword to create a regex pattern from.
+ * @returns {RegExp} - The regex pattern.
+ */
+function createPattern(keyword) {
+  const patternWithPlaceholders = replacePlaceholders(keyword);
+  const escapedPattern = patternWithPlaceholders.replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&"
+  );
+  return new RegExp(`\\b${escapedPattern.replace(/\s+/g, "\\s*")}\\b`, "i");
+}
+
+/**
+ * Checks if a text contains any of the keywords.
+ * @param {string} text - The text to check.
+ * @returns {boolean} - True if the text contains any of the keywords, false otherwise.
+ */
 function containsKeyword(text) {
   return keywords.some((keyword) => createPattern(keyword).test(text));
 }
 
-// Function to check and hide or replace comments
+/**
+ * Checks and hides or replaces comments that contain any of the keywords.
+ * @param {Array<string>} keywords - The list of keywords to check against.
+ * @param {boolean} replaceComments - Whether to replace comments with "[Blocked Comment]" or hide them.
+ */
 function blockComments(keywords, replaceComments) {
   const comments = document.querySelectorAll("#content-text");
   comments.forEach((comment) => {
@@ -85,7 +108,11 @@ function blockComments(keywords, replaceComments) {
   });
 }
 
-// Function to initialize the observer
+/**
+ * Initializes the observer to monitor and block comments.
+ * @param {Array<string>} keywords - The list of keywords to check against.
+ * @param {boolean} replaceComments - Whether to replace comments with "[Blocked Comment]" or hide them.
+ */
 function initObserver(keywords, replaceComments) {
   const commentsSection = document.querySelector("#comments");
   if (commentsSection) {
@@ -102,7 +129,9 @@ function initObserver(keywords, replaceComments) {
   }
 }
 
-// Load keywords and toggle states from storage and run the initObserver function when the page loads
+/**
+ * Loads keywords and toggle states from storage and initializes the observer when the page loads.
+ */
 window.addEventListener("load", () => {
   chrome.storage.sync.get(
     ["keywords", "isEnabled", "replaceComments"],
