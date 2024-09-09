@@ -54,6 +54,16 @@ const keywords = [
   "Lets get this to",
   "[year] anyone?",
   "[year] [month]",
+  "el comentario con más likes es gay",
+  "el comentario con más likes es puto",
+  "Subscribe to my channel",
+  "use me as a mark",
+  "느낌 좋은 여자들",
+  "이부분때문에",
+  "lets pray for those",
+  "button",
+  "el que lea esto",
+  "el comentario con",
 ];
 
 /**
