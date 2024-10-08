@@ -1,65 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NPC Comment Blocker</title>
-    <!-- Font Awesome CDN for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <!-- Link to external CSS -->
-    <link rel="stylesheet" href="/popup.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h1>NPC Comment Blocker</h1>
-      <input
-        type="text"
-        id="keywords"
-        placeholder="What should the comment be replaced with?"
-      />
-      <button id="save">Save Replace Text</button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NPC Comment Blocker</title>
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Link to external CSS -->
+  <link rel="stylesheet" href="popup.css" />
+   <link rel="manifest" href="manifest.json">
+   <link rel="stylesheet" href="./login.html">
+</head>
+<body>
+  <div class="container">
+    <h1>NPC Comment Blocker</h1>
+    <!-- Authentication Section -->
+    <div id="auth-section">
+      <button id="login-button">Login</button>
+      <button id="logout-button" style="display: none;">Logout</button>
+      <p id="user-info" style="display: none;">Logged in as: <span id="user-name"></span></p>
+    </div>
+    <hr />
+    <input type="text" id="keywords" placeholder="What should the comment be replaced with?" />
+    <button id="save">Save Replace Text</button>
+    <div class="toggle-container">
+      <label for="replace-toggle">Replace Comments Instead</label>
+      <input type="checkbox" id="replace-toggle" />
+    </div>
+    <!-- Box around Extension On/Off Toggle -->
+    <div class="extension-box">
       <div class="toggle-container">
-        <label for="replace-toggle">Replace Comments Instead</label>
-        <input type="checkbox" id="replace-toggle" />
-      </div>
-
-      <!-- Box around Extension On/Off Toggle -->
-      <div class="extension-box">
-        <div class="toggle-container">
-          <label for="extension-toggle">Extension On/Off</label>
-          <label class="toggle-switch">
-            <input type="checkbox" id="extension-toggle" />
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <div class="refresh-container" id="reload">
-        <i class="fas fa-sync-alt"></i>
-        <p>Reload to apply</p>
+        <label for="extension-toggle">Extension On/Off</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="extension-toggle" />
+          <span class="slider"></span>
+        </label>
       </div>
     </div>
-
-    <script>
-      // Refresh the page when the "Reload to apply" is clicked
-      document.getElementById('reload').addEventListener('click', function () {
-        location.reload();
-      });
-
-      // Logic to toggle the extension on/off
-      const extensionToggle = document.getElementById('extension-toggle');
-      extensionToggle.addEventListener('change', function () {
-        if (extensionToggle.checked) {
-          console.log('Extension is ON');
-          // Add your logic to enable the extension here
-        } else {
-          console.log('Extension is OFF');
-          // Add your logic to disable the extension here
-        }
-      });
-    </script>
-  </body>
+    <div class="refresh-container" id="reload">
+      <i class="fas fa-sync-alt"></i>
+      <p>Reload to apply</p>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
 </html>

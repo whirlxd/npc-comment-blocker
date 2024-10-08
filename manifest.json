@@ -1,28 +1,40 @@
 {
   "manifest_version": 3,
-  "name": "NPC Comment Blocker",
-  "version": "0.1",
-  "description": "Blocks YouTube comments containing npc phrases and words.",
-  "permissions": ["activeTab", "scripting", "storage", "contextMenus"],
-  "icons": {
-    "16": "./icons/icon16.png",
-    "32": "./icons/icon32.png",
-    "48": "./icons/icon48.png",
-    "128": "./icons/icon128.png"
+  "name": "Your Extension Name",
+  "version": "1.0",
+  "permissions": [
+    "identity",
+    "storage"
+  ],
+  "oauth2": {
+   "client_id":"353771709355-j6m4uaroefk4ji6uit91qvvsnv7c00oq.apps.googleusercontent.com",   
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email"
+    ]
+  },
+  "background": {
+    "service_worker": "background.js"
   },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "./icons/icon16.png",
-      "32": "./icons/icon32.png",
-      "48": "./icons/icon48.png",
-      "128": "./icons/icon128.png"
-    }
-  },
-  "content_scripts": [
-    {
-      "matches": ["*://www.youtube.com/*"],
-      "js": ["content.js"]
-    }
-  ]
+
+       "16": "icons/icon16.png",
+       "48" : "icons/icon16.png",
+       "128" : "icons/icon128.png" 
+
+    },
+    "content_scripts" :[{
+      "matches" : ["< all_urls>"] ,
+      "js" : ["content.js"]
+    
+    }] ,
+    "web_accessible_resources" : [
+      {
+        "resources": ["login.html", "login.js"],
+        "matches" : ["<all_urls"]
+      }
+    ]
+  }
 }

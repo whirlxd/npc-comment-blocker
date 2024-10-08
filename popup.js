@@ -1,32 +1,60 @@
-document.getElementById("save").addEventListener("click", () => {
-  const keywords = document
-    .getElementById("keywords")
-    .value.split(",")
-    .map((kw) => kw.trim().toLowerCase());
-  chrome.storage.sync.set({ keywords }, () => {
-    alert("Keywords saved!");
-  });
-});
+document.addEventListener("DOMContentLoaded", () => {
+  const loginButton = document.getElementById("login-button");
+  const logoutButton = document.getElementById("logout-button");
+  const userInfo = document.getElementById("user-info");
+  const userNameSpan = document.getElementById("user-name");
 
-document.getElementById("toggle").addEventListener("change", (event) => {
-  const isEnabled = event.target.checked;
-  chrome.storage.sync.set({ isEnabled }, () => {
-    console.log("Extension state saved:", isEnabled);
-  });
-});
+  // Function to check if user is already authenticated
+  function checkAuthentication() {
+    chrome.identity.getProfileUserInfo((userInfoData) => {
+      if (userInfoData.email) {
+        // User is authenticated
+        loginButton.style.display = "none";
+        logoutButton.style.display = "block";
+        userInfo.style.display = "block";
+        userNameSpan.textContent = userInfoData.email;
+      } else {
+        // User is not authenticated
+        loginButton.style.display = "block";
+        logoutButton.style.display = "none";
+        userInfo.style.display = "none";
+      }
+    });
+  }
 
-document
-  .getElementById("replace-toggle")
-  .addEventListener("change", (event) => {
-    const replaceComments = event.target.checked;
-    chrome.storage.sync.set({ replaceComments }, () => {
-      console.log("Replace comments state saved:", replaceComments);
+  // Initial check
+  checkAuthentication();
+
+  // Handle login
+  loginButton.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ action: "login" }, (response) => {
+      if (response.success) {
+        checkAuthentication();
+      } else {
+        alert("Authentication failed: " + response.error);
+      }
     });
   });
 
-// Load the current state of the toggles
-chrome.storage.sync.get(["isEnabled", "replaceComments"], (data) => {
-  document.getElementById("toggle").checked = data.isEnabled !== false; // Default to enabled if not set
-  document.getElementById("replace-toggle").checked =
-    data.replaceComments === true; // Default to remove if not set
-});
+  // Handle logout
+  logoutButton.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ action: "logout" }, (response) => {
+      if (response.success) {
+        checkAuthentication();
+      } else {
+        alert("Logout failed: " + response.error);
+      }
+    });
+  });
+
+  // Save Replace Text
+  document.getElementById("save").addEventListener("click", () => {
+    const replaceText = document.getElementById("keywords").value.trim();
+    if (!replaceText) {
+      alert("Please enter replacement text.");
+      return;
+    }
+
+    chrome.identity.getProfileUserInfo((userInfoData) => {
+      const userEmail = userInfoData.email || "default";
+      chrome.storage
