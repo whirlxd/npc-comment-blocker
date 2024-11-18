@@ -32,11 +32,11 @@ It costs 5$ to publish an extension on the Chrome Web Store and I don't want hav
 ## Roadmap
 
 - Add a toggle button to turn the extension on/off - [X]
-- Add a way to add custom comments to block - [/]
+- Add a way to add custom comments to block - [IN PROGRESS]
 - Add an authentication system to block comments based on the user's preference [x]
-- Add a way to customize the blocked comments - [/]
+- Add a way to customize the blocked comments - [X]
 - Add an option to modify the comments instead of blocking them - [X]
-- Improve the comments blocked and implement a better regex system
+- Improve the comments blocked and implement a better regex system [X]
 
 ## Contributing
 Contributions of any kind including but not limited to adding more spam comments ( especially in your local languages ) are 
