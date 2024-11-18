@@ -164,7 +164,7 @@ function initObserver(keywords, replaceComments, replaceWord) {
  * Loads keywords and toggle states from storage and initializes the observer when the page loads.
  */
 window.addEventListener("load", () => {
-	chrome.storage.sync.get(
+	browser.storage.sync.get(
 		["keywords", "isEnabled", "replaceComments", "replaceWord"],
 		(data) => {
 			const keywords = data.keywords || [];
@@ -183,9 +183,9 @@ window.addEventListener("load", () => {
 });
 
 // Listen for changes in storage and reapply the comment blocking logic
-chrome.storage.onChanged.addListener((changes, area) => {
+browser.storage.onChanged.addListener((changes, area) => {
 	if (area === "sync") {
-		chrome.storage.sync.get(
+		browser.storage.sync.get(
 			["keywords", "isEnabled", "replaceComments", "replaceWord"],
 			(data) => {
 				const keywords = data.keywords || [];
