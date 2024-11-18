@@ -21,6 +21,7 @@ const keywords = [
 	"This song is a masterpiece, change my mind.",
 	"If you're reading this, you're a legend.",
 	"Anyone in",
+	"R.I.P Legend",
 	"You’re a legend if you’re watching this in",
 	"Who's listening in",
 	"Who's watching in",
@@ -121,13 +122,15 @@ function containsKeyword(text) {
  * Checks and hides or replaces comments that contain any of the keywords.
  * @param {Array<string>} keywords - The list of keywords to check against.
  * @param {boolean} replaceComments - Whether to replace comments with "[Blocked Comment]" or hide them.
+ * @param {string} customReplaceWord - The custom word to replace comments with.
  */
-function blockComments(keywords, replaceComments) {
+function blockComments(keywords, replaceComments, customReplaceWord) {
 	const comments = document.querySelectorAll("#content-text");
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	comments.forEach((comment) => {
 		if (containsKeyword(comment.innerText.toLowerCase(), keywords)) {
 			if (replaceComments) {
-				comment.innerText = "[Blocked Comment]";
+				comment.innerText = customReplaceWord || "[Blocked Comment]";
 			} else {
 				comment.closest("ytd-comment-thread-renderer").style.display = "none";
 			}
@@ -139,13 +142,14 @@ function blockComments(keywords, replaceComments) {
  * Initializes the observer to monitor and block comments.
  * @param {Array<string>} keywords - The list of keywords to check against.
  * @param {boolean} replaceComments - Whether to replace comments with "[Blocked Comment]" or hide them.
+ * @param {string} replaceWord - The custom word to replace comments with.
  */
-function initObserver(keywords, replaceComments) {
+function initObserver(keywords, replaceComments, replaceWord) {
 	const commentsSection = document.querySelector("#comments");
 	if (commentsSection) {
-		blockComments(keywords, replaceComments);
+		blockComments(keywords, replaceComments, replaceWord);
 		const observer = new MutationObserver(() =>
-			blockComments(keywords, replaceComments),
+			blockComments(keywords, replaceComments, replaceWord),
 		);
 		observer.observe(commentsSection, {
 			childList: true,
@@ -161,18 +165,39 @@ function initObserver(keywords, replaceComments) {
  */
 window.addEventListener("load", () => {
 	chrome.storage.sync.get(
-		["keywords", "isEnabled", "replaceComments"],
+		["keywords", "isEnabled", "replaceComments", "replaceWord"],
 		(data) => {
 			const keywords = data.keywords || [];
+			const replaceWord = data.replaceWord || "[Blocked Comment]";
 			const isEnabled = data.isEnabled !== false; // Default to enabled if not set
 			const replaceComments = data.replaceComments === true; // Default to remove if not set
 			if (isEnabled) {
 				setTimeout(() => {
-					initObserver(keywords, replaceComments);
+					initObserver(keywords, replaceComments, replaceWord);
 				}, 3000);
 			} else {
 				console.log("NPC Comment Blocker is disabled");
 			}
 		},
 	);
+});
+
+// Listen for changes in storage and reapply the comment blocking logic
+chrome.storage.onChanged.addListener((changes, area) => {
+	if (area === "sync") {
+		chrome.storage.sync.get(
+			["keywords", "isEnabled", "replaceComments", "replaceWord"],
+			(data) => {
+				const keywords = data.keywords || [];
+				const replaceWord = data.replaceWord || "[Blocked Comment]";
+				const isEnabled = data.isEnabled !== false; // Default to enabled if not set
+				const replaceComments = data.replaceComments === true; // Default to remove if not set
+				if (isEnabled) {
+					blockComments(keywords, replaceComments, replaceWord);
+				} else {
+					console.log("NPC Comment Blocker is disabled");
+				}
+			},
+		);
+	}
 });
