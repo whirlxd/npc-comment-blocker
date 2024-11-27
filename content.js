@@ -1,84 +1,18 @@
-const keywords = [
-	"100% music, 0% nudity",
-	"Who's here in ",
-	"Who's listening to this in ",
-	"Like if you're watching this in ",
-	"Who's here after watching ",
-	"This song never gets old",
-	"This brings back memories",
-	"This song hits different at 3 am",
-	"This is real music, not like today’s trash.",
-	"Anyone else getting nostalgic vibes?",
-	"This deserves more views/likes!",
-	"How many people are still listening to this in [year]?",
-	"I’m in [current year], but this song is timeless.",
-	"If you're reading this, I hope you have a great day!",
-	"Who’s still watching in [year]?",
-	"Here before this blows up!",
-	"RIP to those who haven’t found this gem yet.",
-	"This comment section is a vibe.",
-	"This song is a masterpiece, change my mind.",
-	"If you're reading this, you're a legend.",
-	"Anyone in",
-	"R.I.P Legend",
-	"You’re a legend if you’re watching this in",
-	"Who's listening in",
-	"Who's watching in",
-	"Who's here in",
-	"Who's still listening in",
-	"You are allowed to like",
-	"Edit: Thanks for the likes!",
-	"Edit: I can't believe this blew up!",
-	"I see you scrolling through the comments",
-	"You are allowed to like",
-	"I am not asking for likes",
-	"If you like this comment",
-	"If you are reading this",
-	"If you don't like this comment",
-	"Wow this blew",
-	"WHO's Still here",
-	"2019 anyone?",
-	"Who else is just randomly listening to some old songs",
-	"I'm not asking for likes",
-	"0% Porn",
-	"100% Music",
-	"See you in 2030",
-	"The older i get",
-	"The worst thing about this song is that it ends",
-	"This song is my childhood",
-	"This song is my life",
-	"This song is my love",
-	"This song is my soul",
-	"This song is my heart",
-	"The worst thing about this",
-	"Lets get this to",
-	"[year] anyone?",
-	"[year] [month]",
-	"el comentario con más likes es gay",
-	"el comentario con más likes es puto",
-	"Subscribe to my channel",
-	"use me as a mark",
-	"느낌 좋은 여자들",
-	"이부분때문에",
-	"lets pray for those",
-	"button",
-	"el que lea esto",
-	"el comentario con",
-	"im here early",
-	"amen jesus",
-	"only love",
-	"free fire",
-	"laek share",
-	"only legends",
-	"first comment",
-	"those who ",
-	"english or spanish",
-	"can i get a",
-	"why so many dislikes",
-	"why so serious",
-	"infinite aura",
-	"hawk tuah",
-];
+/**
+ * Fetches keywords from the server via the background script.
+ * @returns {Promise<Array<string>>} - A promise that resolves to an array of keywords.
+ */
+function fetchKeywords() {
+	return new Promise((resolve, reject) => {
+		chrome.runtime.sendMessage({ action: "fetchKeywords" }, (response) => {
+			if (response.error) {
+				reject(response.error);
+			} else {
+				resolve(response.keywords);
+			}
+		});
+	});
+}
 
 /**
  * Replaces placeholders in a keyword with regex patterns.
@@ -108,9 +42,10 @@ function createPattern(keyword) {
 /**
  * Checks if a text contains any of the keywords.
  * @param {string} text - The text to check.
+ * @param {Array<string>} keywords - The list of keywords to check against.
  * @returns {boolean} - True if the text contains any of the keywords, false otherwise.
  */
-function containsKeyword(text) {
+function containsKeyword(text, keywords) {
 	return keywords.some((keyword) => createPattern(keyword).test(text));
 }
 
@@ -136,21 +71,25 @@ function blockComments(keywords, replaceComments, customReplaceWord) {
 
 /**
  * Initializes the observer to monitor and block comments.
- * @param {Array<string>} keywords - The list of keywords to check against.
  * @param {boolean} replaceComments - Whether to replace comments with "[Blocked Comment]" or hide them.
  * @param {string} replaceWord - The custom word to replace comments with.
  */
-function initObserver(keywords, replaceComments, replaceWord) {
+async function initObserver(replaceComments, replaceWord) {
 	const commentsSection = document.querySelector("#comments");
 	if (commentsSection) {
-		blockComments(keywords, replaceComments, replaceWord);
-		const observer = new MutationObserver(() =>
-			blockComments(keywords, replaceComments, replaceWord),
-		);
-		observer.observe(commentsSection, {
-			childList: true,
-			subtree: true,
-		});
+		try {
+			const keywords = await fetchKeywords();
+			blockComments(keywords, replaceComments, replaceWord);
+			const observer = new MutationObserver(() =>
+				blockComments(keywords, replaceComments, replaceWord),
+			);
+			observer.observe(commentsSection, {
+				childList: true,
+				subtree: true,
+			});
+		} catch (error) {
+			console.error("Failed to initialize observer:", error);
+		}
 	} else {
 		console.error("Comments section not found.");
 	}
@@ -161,15 +100,14 @@ function initObserver(keywords, replaceComments, replaceWord) {
  */
 window.addEventListener("load", () => {
 	browser.storage.sync.get(
-		["keywords", "isEnabled", "replaceComments", "replaceWord"],
-		(data) => {
-			const keywords = data.keywords || [];
+		["isEnabled", "replaceComments", "replaceWord"],
+		async (data) => {
 			const replaceWord = data.replaceWord || "[Blocked Comment]";
 			const isEnabled = data.isEnabled !== false; // Default to enabled if not set
 			const replaceComments = data.replaceComments === true; // Default to remove if not set
 			if (isEnabled) {
-				setTimeout(() => {
-					initObserver(keywords, replaceComments, replaceWord);
+				setTimeout(async () => {
+					await initObserver(replaceComments, replaceWord);
 				}, 3000);
 			} else {
 				console.log("NPC Comment Blocker is disabled");
@@ -179,17 +117,21 @@ window.addEventListener("load", () => {
 });
 
 // Listen for changes in storage and reapply the comment blocking logic
-browser.storage.onChanged.addListener((changes, area) => {
+browser.storage.onChanged.addListener(async (changes, area) => {
 	if (area === "sync") {
 		browser.storage.sync.get(
-			["keywords", "isEnabled", "replaceComments", "replaceWord"],
-			(data) => {
-				const keywords = data.keywords || [];
+			["isEnabled", "replaceComments", "replaceWord"],
+			async (data) => {
 				const replaceWord = data.replaceWord || "[Blocked Comment]";
 				const isEnabled = data.isEnabled !== false; // Default to enabled if not set
 				const replaceComments = data.replaceComments === true; // Default to remove if not set
 				if (isEnabled) {
-					blockComments(keywords, replaceComments, replaceWord);
+					try {
+						const keywords = await fetchKeywords();
+						blockComments(keywords, replaceComments, replaceWord);
+					} catch (error) {
+						console.error("Failed to fetch keywords:", error);
+					}
 				} else {
 					console.log("NPC Comment Blocker is disabled");
 				}
