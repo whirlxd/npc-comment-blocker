@@ -1,3 +1,5 @@
+### Update (Sep 2026) - I plan to rewrite this with an open weights version of Jev or hell maybe even BYOK when that becomes available
+
 # NPC Comment Blocker
 
 This is a simple plugin that blocks NPC comments in the youtube comment section. It is still in development and will be updated regularly.
